@@ -78,11 +78,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Initialize session state for transcript persistence
+if 'transcript' not in st.session_state:
+    st.session_state.transcript = ""
+
 # Input section
 st.markdown("## 📥 Input Options")
-
-# Initialize transcript variable
-transcript = ""
 
 tab1, tab2 = st.tabs(["📝 Text Input", "🎤 Audio Input"])
 
@@ -91,9 +92,14 @@ with tab1:
     st.markdown("### Paste your meeting transcript below:")
     transcript = st.text_area(
         'Meeting Transcript', 
+        value=st.session_state.transcript,
         height=300,
-        placeholder="Paste your meeting transcript here...\n\nExample:\nJohn: Let's discuss the Q4 project timeline.\nSarah: I think we should aim for completion by December 15th.\nMike: I'll prepare the budget report by Friday."
+        placeholder="Paste your meeting transcript here...\n\nExample:\nJohn: Let's discuss the Q4 project timeline.\nSarah: I think we should aim for completion by December 15th.\nMike: I'll prepare the budget report by Friday.",
+        key="text_input"
     )
+    # Update session state when text changes
+    if transcript != st.session_state.transcript:
+        st.session_state.transcript = transcript
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
@@ -127,12 +133,28 @@ with tab2:
             
             if audio_transcript:
                 st.success("🎉 Transcription completed!")
-                transcript = st.text_area("Generated Transcript", audio_transcript, height=300)
+                # Update session state with transcribed text
+                st.session_state.transcript = audio_transcript
+                st.rerun()  # Refresh to show the transcribed text
             else:
                 st.error("❌ Failed to transcribe audio. Please try again.")
     else:
         st.info("👆 Upload an audio file to transcribe it to text.")
     st.markdown('</div>', unsafe_allow_html=True)
+
+# Show current transcript if available
+if st.session_state.transcript:
+    st.markdown("## 📄 Current Transcript")
+    with st.expander("View/Edit Current Transcript", expanded=False):
+        edited_transcript = st.text_area(
+            "Edit transcript if needed",
+            value=st.session_state.transcript,
+            height=200,
+            key="edit_transcript"
+        )
+        if edited_transcript != st.session_state.transcript:
+            st.session_state.transcript = edited_transcript
+            st.rerun()
 
 # Processing section
 st.markdown("## ⚙️ Processing Options")
@@ -144,7 +166,7 @@ with col2:
     st.markdown("")
 
 if st.button('🚀 Generate Summary & Actions', type="primary", use_container_width=True):
-    if not transcript or not transcript.strip():
+    if not st.session_state.transcript or not st.session_state.transcript.strip():
         st.error('❌ Please provide a transcript first!')
     else:
         # Summary generation
@@ -154,11 +176,11 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
             summary = None
             if use_mistral and call_mistral is not None:
                 try:
-                    summary = call_mistral(SUMMARY_PROMPT.format(transcript=transcript), max_tokens=200)
+                    summary = call_mistral(SUMMARY_PROMPT.format(transcript=st.session_state.transcript), max_tokens=200)
                 except Exception as e:
                     st.error(f'❌ Mistral error: {e}')
             if not summary:
-                sents = [s.strip() for s in transcript.split('\n') if s.strip()]
+                sents = [s.strip() for s in st.session_state.transcript.split('\n') if s.strip()]
                 summary = '\n'.join(sents[:5])
             
             st.markdown("### 📝 Meeting Summary")
@@ -169,12 +191,12 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
             items = None
             if use_mistral and call_mistral is not None:
                 try:
-                    resp = call_mistral(ACTION_ITEM_PROMPT.format(transcript=transcript), max_tokens=512)
+                    resp = call_mistral(ACTION_ITEM_PROMPT.format(transcript=st.session_state.transcript), max_tokens=512)
                     items = parse_mistral_action_items(resp)
                 except Exception as e:
                     st.error(f'❌ Mistral error: {e}')
             if not items:
-                items = rule_based_action_extraction(transcript)
+                items = rule_based_action_extraction(st.session_state.transcript)
 
             if items:
                 df = pd.DataFrame(items)
