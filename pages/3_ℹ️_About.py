@@ -148,11 +148,17 @@ with col1:
     st.markdown("""
     <div class="info-card">
         <h4>🤖 Mistral API Setup</h4>
-        <p>For enhanced AI capabilities, set these environment variables:</p>
+        <p>For enhanced AI capabilities, configure your API credentials:</p>
+        <ul>
+            <li><strong>Local Development:</strong> Set environment variables</li>
+            <li><strong>Streamlit Cloud:</strong> Use secrets.toml file</li>
+        </ul>
+        <p><strong>Environment Variables:</strong></p>
         <ul>
             <li><code>MISTRAL_API_URL</code> - Your Mistral endpoint</li>
             <li><code>MISTRAL_API_KEY</code> - Your API key</li>
         </ul>
+        <p><strong>Streamlit Cloud:</strong> Upload <code>.streamlit/secrets.toml</code> with your credentials</p>
         <p><em>Without these, the app falls back to rule-based extraction.</em></p>
     </div>
     """, unsafe_allow_html=True)

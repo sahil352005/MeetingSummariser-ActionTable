@@ -53,3 +53,4 @@ tmp/
 
 # Transcription cache
 transcripts/
+config.toml
