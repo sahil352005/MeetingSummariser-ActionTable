@@ -9,3 +9,7 @@ speechrecognition>=3.8.1
 pydub>=0.25.1
 ffmpeg-python>=0.2.0
 pyttsx3
+
+# Note: For enhanced NLP features, install spaCy model separately:
+# python -m spacy download en_core_web_sm
+# The app will work without it using simple text processing fallback

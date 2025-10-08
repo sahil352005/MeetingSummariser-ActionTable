@@ -42,7 +42,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Download spaCy model
+# Optional: Download spaCy model for enhanced NLP (app works without it)
 python -m spacy download en_core_web_sm
 ```
 
@@ -132,7 +132,7 @@ For MP3 export in Text-to-Speech:
 ### **Core Technologies**
 - **Streamlit**: Modern web interface framework
 - **pandas**: Data manipulation and export
-- **spaCy**: Natural language processing
+- **spaCy**: Natural language processing (optional)
 - **SpeechRecognition**: Audio transcription
 - **pydub**: Audio processing and format conversion
 - **pyttsx3**: Text-to-speech synthesis
@@ -140,7 +140,7 @@ For MP3 export in Text-to-Speech:
 ### **AI Integration**
 - **Mistral LLM API**: High-quality summaries and structured extraction
 - **Google Speech Recognition**: Audio transcription service
-- **Rule-based fallback**: Offline processing capabilities
+- **Rule-based fallback**: Simple text processing when spaCy unavailable
 
 ## 📋 **Usage Examples**
 

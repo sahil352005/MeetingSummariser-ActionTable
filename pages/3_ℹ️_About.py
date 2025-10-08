@@ -106,7 +106,8 @@ with col1:
         <h4><span class="tech-icon">🤖</span>AI & NLP</h4>
         <ul>
             <li><strong>Mistral LLM API</strong> - High-quality summaries and structured extraction</li>
-            <li><strong>spaCy</strong> - Rule-based fallback for offline processing</li>
+            <li><strong>spaCy</strong> - Enhanced NLP processing (optional)</li>
+            <li><strong>Simple Text Processing</strong> - Fallback when spaCy unavailable</li>
             <li><strong>SpeechRecognition</strong> - Audio transcription engine</li>
         </ul>
     </div>
@@ -133,9 +134,10 @@ st.markdown("""
     <h4>🚀 Getting Started</h4>
     <ol>
         <li><strong>Install Dependencies:</strong> <code>pip install -r requirements.txt</code></li>
-        <li><strong>Download spaCy Model:</strong> <code>python -m spacy download en_core_web_sm</code></li>
+        <li><strong>Optional - Download spaCy Model:</strong> <code>python -m spacy download en_core_web_sm</code></li>
         <li><strong>Run the Application:</strong> <code>streamlit run streamlit_app.py</code></li>
     </ol>
+    <p><em>Note: The app works without spaCy using simple text processing fallback.</em></p>
 </div>
 """, unsafe_allow_html=True)
 
