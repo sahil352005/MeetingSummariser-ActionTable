@@ -43,3 +43,13 @@ Thumbs.db
 *.log
 output/
 tmp/
+
+# Audio files
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.flac
+
+# Transcription cache
+transcripts/

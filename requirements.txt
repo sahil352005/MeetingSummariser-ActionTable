@@ -5,3 +5,7 @@ spacy>=3.5
 streamlit>=1.25
 python-multipart>=0.0.5
 tqdm
+speechrecognition>=3.8.1
+pydub>=0.25.1
+ffmpeg-python>=0.2.0
+pyttsx3

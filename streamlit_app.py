@@ -6,18 +6,47 @@ try:
 except Exception:
     call_mistral = None
 from prompts import SUMMARY_PROMPT, ACTION_ITEM_PROMPT
+from audio_processor import transcribe_audio
+import os
 
 st.set_page_config(page_title='Meeting Notes Summarizer', layout='wide')
 
 st.title('Meeting Notes Summarizer & Action Item Extractor')
-st.write('Paste your meeting transcript below, then click **Generate** to get a summary and structured action items.')
 
-transcript = st.text_area('Transcript', height=300)
+# Add file uploader for audio
+audio_file = st.file_uploader("Upload audio file (MP3, WAV, M4A, OGG, FLAC)", 
+                             type=['mp3', 'wav', 'm4a', 'ogg', 'flac'])
+
+# Add tabs for input methods
+tab1, tab2 = st.tabs(["Text Input", "Audio Input"])
+
+with tab1:
+    transcript = st.text_area('Paste transcript here', height=300)
+
+with tab2:
+    if audio_file:
+        with st.spinner('Transcribing audio...'):
+            # Save uploaded file temporarily
+            temp_path = f"temp_{audio_file.name}"
+            with open(temp_path, "wb") as f:
+                f.write(audio_file.getbuffer())
+            
+            # Get transcript
+            transcript = transcribe_audio(temp_path)
+            
+            # Clean up
+            os.remove(temp_path)
+            
+            if transcript:
+                st.text_area("Generated Transcript", transcript, height=300)
+            else:
+                st.error("Failed to transcribe audio")
+
 use_mistral = st.checkbox('Use Mistral API (requires env vars)', value=False)
 
-if st.button('Generate'):
-    if not transcript.strip():
-        st.warning('Please paste a transcript first.')
+if st.button('Generate Summary & Actions'):
+    if not transcript or not transcript.strip():
+        st.error('Please provide a transcript first!')
     else:
         with st.spinner('Generating summary...'):
             summary = None
