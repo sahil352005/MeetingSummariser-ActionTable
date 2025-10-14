@@ -3,19 +3,22 @@ load_dotenv()
 import os
 import requests
 
-# Try Streamlit secrets first (for cloud deployment), then fallback to environment variables
-try:
-    import streamlit as st
-    MISTRAL_API_URL = st.secrets["api"]["MISTRAL_API_URL"]
-    MISTRAL_API_KEY = st.secrets["api"]["MISTRAL_API_KEY"]
-except (ImportError, KeyError, AttributeError):
-    # Fallback to environment variables for local development
-    MISTRAL_API_URL = os.getenv('MISTRAL_API_URL')
-    MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
+# Use environment variables first, then fallback to Streamlit secrets
+MISTRAL_API_URL = os.getenv('MISTRAL_API_URL')
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
+
+# If not found in env vars, try Streamlit secrets
+if not MISTRAL_API_URL or not MISTRAL_API_KEY:
+    try:
+        import streamlit as st
+        MISTRAL_API_URL = MISTRAL_API_URL or st.secrets["api"]["MISTRAL_API_URL"]
+        MISTRAL_API_KEY = MISTRAL_API_KEY or st.secrets["api"]["MISTRAL_API_KEY"]
+    except (ImportError, KeyError, AttributeError):
+        pass
 
 def call_mistral(prompt: str, max_tokens: int = 512, model: str = 'mistral-small'):
     if not MISTRAL_API_URL or not MISTRAL_API_KEY:
-        raise EnvironmentError('Set MISTRAL_API_URL and MISTRAL_API_KEY in Streamlit secrets or environment variables.')
+        raise EnvironmentError('Set MISTRAL_API_URL and MISTRAL_API_KEY in environment variables.')
 
     headers = {
         'Authorization': f'Bearer {MISTRAL_API_KEY}',
@@ -23,7 +26,7 @@ def call_mistral(prompt: str, max_tokens: int = 512, model: str = 'mistral-small
     }
 
     payload = {
-        "model": model,  # Available models: mistral-tiny, mistral-small, mistral-medium
+        "model": model,
         "messages": [
             {"role": "user", "content": prompt}
         ],

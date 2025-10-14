@@ -178,10 +178,10 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
                 try:
                     summary = call_mistral(SUMMARY_PROMPT.format(transcript=st.session_state.transcript), max_tokens=200)
                 except Exception as e:
-                    st.error(f'❌ Mistral error: {e}')
+                    st.warning(f'⚠️ Mistral API unavailable: {str(e)[:100]}... Using fallback method.')
             if not summary:
                 sents = [s.strip() for s in st.session_state.transcript.split('\n') if s.strip()]
-                summary = '\n'.join(sents[:5])
+                summary = '• ' + '\n• '.join(sents[:5]) + '\n\n*Generated using fallback method*'
             
             st.markdown("### 📝 Meeting Summary")
             st.markdown(f'<div class="summary-card">{summary}</div>', unsafe_allow_html=True)
@@ -194,12 +194,22 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
                     resp = call_mistral(ACTION_ITEM_PROMPT.format(transcript=st.session_state.transcript), max_tokens=512)
                     items = parse_mistral_action_items(resp)
                 except Exception as e:
-                    st.error(f'❌ Mistral error: {e}')
+                    st.warning(f'⚠️ Mistral API unavailable: {str(e)[:100]}... Using rule-based extraction.')
             if not items:
                 items = rule_based_action_extraction(st.session_state.transcript)
 
             if items:
                 df = pd.DataFrame(items)
+                
+                # Ensure all required columns exist
+                for col in ['task', 'owner', 'deadline', 'note']:
+                    if col not in df.columns:
+                        df[col] = ''
+                
+                # Clean up data
+                df['owner'] = df['owner'].fillna('').astype(str)
+                df['deadline'] = df['deadline'].fillna('').astype(str)
+                df['note'] = df['note'].fillna('').astype(str)
                 
                 st.markdown("### ✅ Action Items")
                 
@@ -208,19 +218,19 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
                 with col1:
                     st.markdown(f'<div class="metric-card"><h4>{len(df)}</h4><p>Total Items</p></div>', unsafe_allow_html=True)
                 with col2:
-                    owners = df['owner'].dropna().astype(str).str.strip()
-                    unique_owners = owners[owners != ''].nunique()
+                    unique_owners = len([o for o in df['owner'].unique() if o.strip()])
                     st.markdown(f'<div class="metric-card"><h4>{unique_owners}</h4><p>Assigned Owners</p></div>', unsafe_allow_html=True)
                 with col3:
-                    deadlines = df['deadline'].dropna().astype(str).str.strip()
-                    with_deadlines = (deadlines != '').sum()
+                    with_deadlines = len([d for d in df['deadline'] if d.strip()])
                     st.markdown(f'<div class="metric-card"><h4>{with_deadlines}</h4><p>With Deadlines</p></div>', unsafe_allow_html=True)
                 with col4:
                     st.markdown(f'<div class="metric-card"><h4>{"🤖" if use_mistral and call_mistral else "📋"}</h4><p>Method Used</p></div>', unsafe_allow_html=True)
                 
                 # Action items table
                 st.markdown('<div class="action-card">', unsafe_allow_html=True)
-                st.dataframe(df, use_container_width=True)
+                # Reorder columns for better display
+                display_df = df[['task', 'owner', 'deadline', 'note']].copy()
+                st.dataframe(display_df, use_container_width=True, hide_index=True)
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Download buttons
@@ -228,7 +238,7 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
                 with col1:
                     st.download_button(
                         '📥 Download CSV', 
-                        df.to_csv(index=False).encode('utf-8'), 
+                        display_df.to_csv(index=False).encode('utf-8'), 
                         'action_items.csv', 
                         'text/csv',
                         use_container_width=True
@@ -236,7 +246,7 @@ if st.button('🚀 Generate Summary & Actions', type="primary", use_container_wi
                 with col2:
                     st.download_button(
                         '📥 Download JSON', 
-                        df.to_json(orient='records').encode('utf-8'), 
+                        display_df.to_json(orient='records').encode('utf-8'), 
                         'action_items.json', 
                         'application/json',
                         use_container_width=True
