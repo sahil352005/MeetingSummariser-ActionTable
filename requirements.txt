@@ -1,7 +1,4 @@
-requests>=2.28
 pandas>=1.5
-python-dotenv>=1.0
-spacy>=3.5
 streamlit>=1.25
 python-multipart>=0.0.5
 tqdm
@@ -10,6 +7,5 @@ pydub>=0.25.1
 ffmpeg-python>=0.2.0
 pyttsx3
 
-# Note: For enhanced NLP features, install spaCy model separately:
-# python -m spacy download en_core_web_sm
-# The app will work without it using simple text processing fallback
+# Note: Fast NLP processing with minimal dependencies
+# Optimized for speed and efficiency
