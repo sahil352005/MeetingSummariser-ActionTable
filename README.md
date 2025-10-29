@@ -1,7 +1,15 @@
 # ⚡ Lightning-Fast Meeting Intelligence Platform
 
 An ultra-lightweight Streamlit application that transforms meeting recordings and transcripts into actionable insights with instant processing and zero heavy dependencies.
+<img width="1366" height="768" alt="Screenshot (542)" src="https://github.com/user-attachments/assets/abd9a39b-b28d-41d9-acfd-cb18719c63a2" />
 
+<img width="1366" height="768" alt="Screenshot (543)" src="https://github.com/user-attachments/assets/473ce640-e297-4b0a-ba8e-a69ecbbbcec3" />
+
+<img width="1366" height="768" alt="Screenshot (544)" src="https://github.com/user-attachments/assets/380e491e-db6a-4b55-9089-93b671c1203a" />
+
+<img width="1366" height="768" alt="Screenshot (545)" src="https://github.com/user-attachments/assets/60cca2b0-5fb8-4095-becb-335485d7018d" />
+
+<img width="1366" height="768" alt="Screenshot (546)" src="https://github.com/user-attachments/assets/f0c4245c-28b6-4b21-89b5-08efba3a0f28" />
 
 
 ## ✨ Features
